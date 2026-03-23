@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Planning Maison">
+<title>Planning Ménager</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:-webkit-fill-available}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(160deg,#5a67d8,#434190 45%,#322659);min-height:100vh;min-height:-webkit-fill-available;padding:16px 12px 60px}
+@supports(padding-top:env(safe-area-inset-top)){body{padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(60px,env(safe-area-inset-bottom))}}
+.app{max-width:420px;margin:0 auto}
+.hdr{text-align:center;color:#fff;padding:8px 0 18px}
+.hdr h1{font-size:1.4rem;font-weight:800}
+.hdr p{font-size:.73rem;opacity:.7;margin-top:4px}
+.card{background:#fff;border-radius:18px;padding:14px 15px;margin-bottom:12px;box-shadow:0 4px 20px rgba(0,0,0,.12)}
+.pr{display:flex;justify-content:space-between;margin-bottom:8px}
+.prl{font-size:.82rem;font-weight:600;color:#4a5568}
+.prv{font-size:.82rem;font-weight:700;color:#2d3748}
+.prb{background:#e2e8f0;border-radius:99px;height:9px;overflow:hidden}
+.prf{height:100%;border-radius:99px;background:linear-gradient(90deg,#68d391,#38a169);transition:width .5s}
+.prs{display:flex;justify-content:space-between;margin-top:7px}
+.prc{font-size:.72rem;color:#718096}
+.rst{background:none;border:none;color:#a0aec0;font-size:.72rem;cursor:pointer;padding:5px 9px;touch-action:manipulation}
+.sts{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.st{flex:1;text-align:center;background:#f7fafc;border-radius:10px;padding:7px 4px}
+.stn{font-size:1.2rem;font-weight:800;color:#2d3748}
+.stl{font-size:.62rem;color:#718096;margin-top:1px}
+.mot{font-size:.77rem;color:#718096;font-style:italic;text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.wt{display:flex;gap:7px;margin-bottom:11px}
+.wtb{flex:1;padding:10px 3px;border-radius:12px;border:none;cursor:pointer;font-size:.75rem;font-weight:700;touch-action:manipulation;transition:all .2s}
+.wtb.on{background:#fff;color:#434190;box-shadow:0 4px 12px rgba(0,0,0,.14)}
+.wtb.off{background:rgba(255,255,255,.17);color:rgba(255,255,255,.88)}
+.dg{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:11px}
+.db{padding:7px 2px;border-radius:10px;border:2px solid transparent;cursor:pointer;text-align:center;background:#fff;position:relative;box-shadow:0 1px 5px rgba(0,0,0,.07);touch-action:manipulation}
+.db .da{font-size:.48rem;font-weight:700;color:#a0aec0;text-transform:uppercase}
+.db .de{font-size:.95rem;display:block;margin:2px 0;line-height:1.2}
+.db.act{border-color:#434190;box-shadow:0 3px 10px rgba(67,65,144,.3);transform:scale(1.06)}
+.db.ok{background:#f0fff4;border-color:#68d391}
+.db.td::after{content:'';position:absolute;top:-3px;right:-3px;width:7px;height:7px;background:#fc8181;border-radius:50%;border:1.5px solid transparent}
+.tcw{border-radius:18px;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,.14);margin-bottom:12px}
+.tch{padding:15px 16px;color:#fff}
+.twl{font-size:.63rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.65}
+.tcm{display:flex;justify-content:space-between;align-items:flex-start;margin-top:5px}
+.tct{font-size:1.1rem;font-weight:800;line-height:1.25}
+.tbx{background:rgba(255,255,255,.2);border-radius:10px;padding:6px 10px;text-align:center;flex-shrink:0;margin-left:8px}
+.tbn{font-size:1.35rem;font-weight:900;line-height:1}
+.tbl{font-size:.57rem;opacity:.75}
+.dp{margin-top:11px}
+.dpr{display:flex;justify-content:space-between;font-size:.68rem;opacity:.75}
+.dpb{background:rgba(255,255,255,.27);border-radius:99px;height:5px;margin-top:5px;overflow:hidden}
+.dpf{height:100%;border-radius:99px;background:#fff;transition:width .4s}
+.tcb{padding:10px}
+.ti{display:flex;align-items:center;gap:10px;padding:12px;border-radius:12px;margin-bottom:7px;cursor:pointer;background:#fff;box-shadow:0 2px 7px rgba(0,0,0,.06);border:2px solid transparent;-webkit-user-select:none;user-select:none;touch-action:manipulation}
+.ti:last-child{margin-bottom:0}
+.ti.dn{opacity:.5;border-color:#c6f6d5;background:#f7fafc}
+.ti.dn .tt{text-decoration:line-through;color:#a0aec0}
+.ck{width:24px;height:24px;border-radius:50%;border:2px solid #cbd5e0;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.65rem;color:#fff;font-weight:800;transition:all .2s}
+.ck.on{background:#48bb78;border-color:#48bb78}
+.tt{flex:1;font-size:.85rem;font-weight:500;color:#2d3748;line-height:1.3}
+.dur{font-size:.68rem;font-weight:700;padding:3px 7px;border-radius:7px;flex-shrink:0}
+.cong{text-align:center;padding:11px;background:#f0fff4;border-radius:12px;color:#276749;font-weight:700;font-size:.82rem;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="hdr">
+    <h1>🏠 Mon Planning Ménager</h1>
+    <p>20 min/jour &middot; 4 semaines &middot; Maison impeccable</p>
+  </div>
+  <div class="card">
+    <div class="pr"><span class="prl">Progression du mois</span><span class="prv" id="gpct">0%</span></div>
+    <div class="prb"><div class="prf" id="gfill" style="width:0%"></div></div>
+    <div class="prs">
+      <span class="prc" id="gct">0 / 0 tâches</span>
+      <button class="rst" onclick="resetAll()">🔄 Réinitialiser</button>
+    </div>
+    <div class="sts">
+      <div class="st"><div class="stn" id="s1">0</div><div class="stl">tâches faites</div></div>
+      <div class="st"><div class="stn" id="s2">0</div><div class="stl">jours complets</div></div>
+      <div class="st"><div class="stn" id="s3">28</div><div class="stl">jours restants</div></div>
+    </div>
+    <div class="mot" id="mot">Bienvenue! Prêt pour un mois propre? 🚀</div>
+  </div>
+  <div class="wt" id="wt"></div>
+  <div class="dg" id="dg"></div>
+  <div id="tc"></div>
+</div>
+
+<script>
+var _fb={};
+function lsG(k){try{return localStorage.getItem(k);}catch(e){return _fb[k]!==undefined?_fb[k]:null;}}
+function lsS(k,v){try{localStorage.setItem(k,v);}catch(e){_fb[k]=v;}}
+
+var D=[
+  {w:1,n:"Lun",th:"Salles de bains",em:"\uD83D\uDEC1",g:"linear-gradient(135deg,#3182ce,#0bc5ea)",bg:"#ebf8ff",bc:"#2b6cb0",bb:"#bee3f8",
+   t:[{x:"Nettoyer les 2 toilettes",d:6},{x:"Essuyer lavabos et miroirs",d:5},{x:"Rincer douche et baignoire",d:5},{x:"Ramasser le linge sale",d:4}]},
+  {w:1,n:"Mar",th:"Cuisine",em:"\uD83C\uDF73",g:"linear-gradient(135deg,#dd6b20,#f6ad55)",bg:"#fffaf0",bc:"#c05621",bb:"#feebc8",
+   t:[{x:"Essuyer comptoirs et \xEElot",d:5},{x:"Nettoyer l\u2019\xE9vier",d:3},{x:"Essuyer les \xE9lectrom\xE9nagers",d:4},{x:"Balayer le plancher",d:5},{x:"Vider la poubelle",d:3}]},
+  {w:1,n:"Mer",th:"Salon & Jeux",em:"\uD83D\uDECB\uFE0F",g:"linear-gradient(135deg,#805ad5,#d53f8c)",bg:"#faf5ff",bc:"#553c9a",bb:"#e9d8fd",
+   t:[{x:"Ramasser et ranger le salon",d:5},{x:"Essuyer surfaces et \xE9cran TV",d:4},{x:"Aspirer le canap\xE9",d:3},{x:"Ranger la salle de jeux",d:8}]},
+  {w:1,n:"Jeu",th:"Chambres",em:"\uD83D\uDECF\uFE0F",g:"linear-gradient(135deg,#2f855a,#68d391)",bg:"#f0fff4",bc:"#276749",bb:"#c6f6d5",
+   t:[{x:"Faire les 4 lits",d:8},{x:"Ramasser v\xEAtements et objets",d:7},{x:"Essuyer les tables de chevet",d:5}]},
+  {w:1,n:"Ven",th:"Sols partout",em:"\uD83E\uDDF9",g:"linear-gradient(135deg,#c53030,#fc8181)",bg:"#fff5f5",bc:"#9b2c2c",bb:"#fed7d7",
+   t:[{x:"Aspirer salon, couloirs et salle de jeux",d:8},{x:"Aspirer les 4 chambres",d:8},{x:"Balayer la cuisine",d:4}]},
+  {w:1,n:"Sam",th:"Atelier Zone 1",em:"\uD83D\uDD27",g:"linear-gradient(135deg,#4a5568,#718096)",bg:"#f7fafc",bc:"#2d3748",bb:"#e2e8f0",
+   t:[{x:"Ranger les outils qui tra\xEEnent",d:10},{x:"Balayer l\u2019atelier",d:5},{x:"Identifier une bo\xEEte \xE0 trier",d:5}]},
+  {w:1,n:"Dim",th:"L\xE9g\xE8ret\xE9",em:"\u2728",g:"linear-gradient(135deg,#b7791f,#f6e05e)",bg:"#fffff0",bc:"#744210",bb:"#fefcbf",
+   t:[{x:"Tour de la maison \u2014 ramasser",d:7},{x:"Vider le lave-vaisselle",d:5},{x:"Sortir les poubelles",d:5},{x:"Planifier la semaine 2",d:3}]},
+  {w:2,n:"Lun",th:"Salles de bains +",em:"\uD83D\uDEBF",g:"linear-gradient(135deg,#3182ce,#0bc5ea)",bg:"#ebf8ff",bc:"#2b6cb0",bb:"#bee3f8",
+   t:[{x:"Nettoyer les 2 toilettes",d:6},{x:"Frotter les joints de la douche",d:6},{x:"Nettoyer l\u2019armoire \xE0 pharmacie",d:5},{x:"Changer les serviettes de bain",d:3}]},
+  {w:2,n:"Mar",th:"Frigo & Four",em:"\u2744\uFE0F",g:"linear-gradient(135deg,#dd6b20,#f6ad55)",bg:"#fffaf0",bc:"#c05621",bb:"#feebc8",
+   t:[{x:"Essuyer l\u2019int\xE9rieur du frigo",d:8},{x:"Nettoyer le micro-ondes",d:7},{x:"Essuyer les devants d\u2019armoires",d:5}]},
+  {w:2,n:"Mer",th:"Salon profond",em:"\uD83E\uDEB4",g:"linear-gradient(135deg,#805ad5,#d53f8c)",bg:"#faf5ff",bc:"#553c9a",bb:"#e9d8fd",
+   t:[{x:"D\xE9poussi\xE9rer toutes les surfaces",d:8},{x:"Organiser les \xE9tag\xE8res",d:7},{x:"Nettoyer les vitres int\xE9rieures",d:5}]},
+  {w:2,n:"Jeu",th:"Draps ch.1 & 2",em:"\uD83D\uDECF\uFE0F",g:"linear-gradient(135deg,#2f855a,#68d391)",bg:"#f0fff4",bc:"#276749",bb:"#c6f6d5",
+   t:[{x:"Changer les draps des chambres 1 et 2",d:12},{x:"Ranger les v\xEAtements qui tra\xEEnent",d:8}]},
+  {w:2,n:"Ven",th:"Sols + Vitres",em:"\uD83E\uDE9F",g:"linear-gradient(135deg,#c53030,#fc8181)",bg:"#fff5f5",bc:"#9b2c2c",bb:"#fed7d7",
+   t:[{x:"Aspirer tous les sols",d:12},{x:"Essuyer les vitres accessibles",d:8}]},
+  {w:2,n:"Sam",th:"Atelier Zone 2",em:"\uD83D\uDD29",g:"linear-gradient(135deg,#4a5568,#718096)",bg:"#f7fafc",bc:"#2d3748",bb:"#e2e8f0",
+   t:[{x:"Trier les outils \xE9lectriques",d:10},{x:"Organiser l\u2019\xE9tabli",d:7},{x:"Balayer l\u2019atelier",d:3}]},
+  {w:2,n:"Dim",th:"Lessive",em:"\uD83E\uDDFA",g:"linear-gradient(135deg,#b7791f,#f6e05e)",bg:"#fffff0",bc:"#744210",bb:"#fefcbf",
+   t:[{x:"Tour de la maison \u2014 ramasser",d:7},{x:"Lancer une lessive",d:3},{x:"Plier et ranger le linge propre",d:10}]},
+  {w:3,n:"Lun",th:"Salles de bains",em:"\uD83E\uDEA5",g:"linear-gradient(135deg,#3182ce,#0bc5ea)",bg:"#ebf8ff",bc:"#2b6cb0",bb:"#bee3f8",
+   t:[{x:"Nettoyer les 2 toilettes",d:6},{x:"D\xE9calcifier les robinets",d:5},{x:"Laver les tapis de bain",d:5},{x:"Nettoyer interrupteurs et poign\xE9es",d:4}]},
+  {w:3,n:"Mar",th:"Cuisine d\xE9tail",em:"\uD83E\uDD58",g:"linear-gradient(135deg,#dd6b20,#f6ad55)",bg:"#fffaf0",bc:"#c05621",bb:"#feebc8",
+   t:[{x:"Nettoyer la plaque de cuisson",d:7},{x:"Essuyer comptoirs et \xEElot",d:5},{x:"Nettoyer l\u2019\xE9vier en profondeur",d:5},{x:"Trier le garde-manger",d:3}]},
+  {w:3,n:"Mer",th:"Salle de jeux +",em:"\uD83C\uDFAE",g:"linear-gradient(135deg,#805ad5,#d53f8c)",bg:"#faf5ff",bc:"#553c9a",bb:"#e9d8fd",
+   t:[{x:"Ranger tous les jeux et jouets",d:8},{x:"D\xE9poussi\xE9rer consoles et \xE9quipements",d:5},{x:"Aspirer la salle de jeux",d:4},{x:"Organiser les \xE9tag\xE8res",d:3}]},
+  {w:3,n:"Jeu",th:"Draps ch.3 & 4",em:"\uD83D\uDECF\uFE0F",g:"linear-gradient(135deg,#2f855a,#68d391)",bg:"#f0fff4",bc:"#276749",bb:"#c6f6d5",
+   t:[{x:"Changer les draps des chambres 3 et 4",d:12},{x:"D\xE9poussi\xE9rer meubles et surfaces",d:8}]},
+  {w:3,n:"Ven",th:"Sols lav\xE9s",em:"\uD83E\uDDF4",g:"linear-gradient(135deg,#c53030,#fc8181)",bg:"#fff5f5",bc:"#9b2c2c",bb:"#fed7d7",
+   t:[{x:"Aspirer tous les sols",d:10},{x:"Laver le plancher de la cuisine",d:5},{x:"Laver les planchers des salles de bains",d:5}]},
+  {w:3,n:"Sam",th:"Atelier Zone 3",em:"\uD83E\uDE9B",g:"linear-gradient(135deg,#4a5568,#718096)",bg:"#f7fafc",bc:"#2d3748",bb:"#e2e8f0",
+   t:[{x:"Trier visserie et quincaillerie",d:10},{x:"Organiser les \xE9tag\xE8res de l\u2019atelier",d:7},{x:"Balayer l\u2019atelier",d:3}]},
+  {w:3,n:"Dim",th:"Maison & Plantes",em:"\uD83C\uDF31",g:"linear-gradient(135deg,#b7791f,#f6e05e)",bg:"#fffff0",bc:"#744210",bb:"#fefcbf",
+   t:[{x:"Tour de la maison \u2014 ramasser",d:7},{x:"Arroser les plantes",d:5},{x:"Nettoyer les poign\xE9es de portes",d:5},{x:"Planifier la semaine 4",d:3}]},
+  {w:4,n:"Lun",th:"Salles de bains",em:"\uD83E\uDDFC",g:"linear-gradient(135deg,#3182ce,#0bc5ea)",bg:"#ebf8ff",bc:"#2b6cb0",bb:"#bee3f8",
+   t:[{x:"Nettoyage complet des 2 toilettes",d:6},{x:"Essuyer carreaux de la douche",d:6},{x:"Nettoyer les miroirs",d:5},{x:"Remplir savon et papier toilette",d:3}]},
+  {w:4,n:"Mar",th:"Cuisine bilan",em:"\uD83C\uDF7D\uFE0F",g:"linear-gradient(135deg,#dd6b20,#f6ad55)",bg:"#fffaf0",bc:"#c05621",bb:"#feebc8",
+   t:[{x:"Nettoyer la surface du four",d:7},{x:"Essuyer la hotte aspirante",d:5},{x:"Nettoyer le bas des armoires",d:5},{x:"Vider et nettoyer le bac \xE0 recyclage",d:3}]},
+  {w:4,n:"Mer",th:"Salon & Jeux bilan",em:"\uD83C\uDFAF",g:"linear-gradient(135deg,#805ad5,#d53f8c)",bg:"#faf5ff",bc:"#553c9a",bb:"#e9d8fd",
+   t:[{x:"Ranger et d\xE9poussi\xE9rer le salon",d:7},{x:"Aspirer sous les coussins du canap\xE9",d:4},{x:"Ranger les c\xE2bles",d:5},{x:"Nettoyer les t\xE9l\xE9commandes",d:4}]},
+  {w:4,n:"Jeu",th:"Chambres bilan",em:"\uD83C\uDF1F",g:"linear-gradient(135deg,#2f855a,#68d391)",bg:"#f0fff4",bc:"#276749",bb:"#c6f6d5",
+   t:[{x:"Trier v\xEAtements \xE0 donner ou jeter",d:8},{x:"Faire les 4 lits soigneusement",d:8},{x:"Essuyer toutes les surfaces",d:4}]},
+  {w:4,n:"Ven",th:"Grand m\xE9nage sols",em:"\u2728",g:"linear-gradient(135deg,#c53030,#fc8181)",bg:"#fff5f5",bc:"#9b2c2c",bb:"#fed7d7",
+   t:[{x:"Aspirer toutes les pi\xE8ces",d:10},{x:"Laver plancher cuisine et entr\xE9e",d:10}]},
+  {w:4,n:"Sam",th:"Atelier bilan",em:"\uD83C\uDFC6",g:"linear-gradient(135deg,#4a5568,#718096)",bg:"#f7fafc",bc:"#2d3748",bb:"#e2e8f0",
+   t:[{x:"Grande organisation de l\u2019atelier",d:12},{x:"Inventaire des outils",d:5},{x:"Balayer tout l\u2019atelier",d:3}]},
+  {w:4,n:"Dim",th:"Bilan mensuel",em:"\uD83E\uDD73",g:"linear-gradient(135deg,#b7791f,#f6e05e)",bg:"#fffff0",bc:"#744210",bb:"#fefcbf",
+   t:[{x:"Tour final de la maison",d:5},{x:"Liste produits m\xE9nagers \xE0 acheter",d:5},{x:"Planifier le mois suivant",d:5},{x:"Se r\xE9compenser \u2014 un mois complet!",d:5}]}
+];
+
+var Q=[
+  "Bienvenue! Pr\xEAt pour un mois propre? \uD83D\uDE80",
+  "Chaque petite action compte! \uD83D\uDCAA",
+  "Tu es sur la bonne lanc\xE9e! \uD83C\uDF1F",
+  "\xC0 mi-chemin \u2014 continue! \uD83D\uDD25",
+  "Plus que quelques jours \u2014 bravo! \uD83C\uDFAF",
+  "La fin est proche \u2014 tu y es presque! \uD83C\uDFC5",
+  "Mois complet! Tu es une machine! \uD83C\uDFC6"
+];
+
+var raw=lsG('pm28'), s=raw?JSON.parse(raw):{t:{},w:1,d:0};
+if(!s.t)s.t={};
+var cw=s.w||1, cd=s.d||0;
+
+function sv(){s.w=cw;s.d=cd;lsS('pm28',JSON.stringify(s));}
+function aT(){return D.reduce(function(a,d){return a+d.t.length;},0);}
+function aD(){return D.reduce(function(a,d,i){return a+d.t.filter(function(t,j){return s.t[i+'_'+j];}).length;},0);}
+function dD(i){return D[i].t.filter(function(t,j){return s.t[i+'_'+j];}).length;}
+function dF(){return D.filter(function(d,i){return dD(i)===d.t.length;}).length;}
+function tDow(){var d=new Date().getDay();return d===0?6:d-1;}
+
+function rWT(){
+  document.getElementById('wt').innerHTML=[1,2,3,4].map(function(w){
+    return '<button class="wtb '+(cw===w?'on':'off')+'" onclick="setW('+w+')">Sem. '+w+'</button>';
+  }).join('');
+}
+
+function rDG(){
+  var dow=tDow(), h='';
+  D.forEach(function(d,i){
+    if(d.w!==cw)return;
+    var ok=dD(i)===d.t.length, isT=(i%7)===dow;
+    var cls='db'+(i===cd?' act':'')+(ok?' ok':'')+(isT?' td':'');
+    h+='<button class="'+cls+'" onclick="setD('+i+')">';
+    h+='<div class="da">'+d.n+'</div>';
+    h+='<span class="de">'+(ok?'\u2705':d.em)+'</span>';
+    h+='</button>';
+  });
+  document.getElementById('dg').innerHTML=h;
+}
+
+function rTC(){
+  var d=D[cd], i=cd;
+  var tot=d.t.reduce(function(a,t){return a+t.d;},0);
+  var done=dD(i), pct=Math.round(done/d.t.length*100);
+  var th='';
+  d.t.forEach(function(t,j){
+    var c=!!s.t[i+'_'+j];
+    th+='<div class="ti'+(c?' dn':'')+'" onclick="tog('+i+','+j+')">';
+    th+='<div class="ck'+(c?' on':'')+'">'+( c?'\u2713':'' )+'</div>';
+    th+='<span class="tt">'+t.x+'</span>';
+    th+='<span class="dur" style="background:'+d.bb+';color:'+d.bc+'">'+t.d+' min</span>';
+    th+='</div>';
+  });
+  if(pct===100)th+='<div class="cong">\uD83C\uDF89 Journ\xE9e compl\xE9t\xE9e! Bravo!</div>';
+  document.getElementById('tc').innerHTML=
+    '<div class="tcw">'+
+    '<div class="tch" style="background:'+d.g+'">'+
+    '<div class="twl">Semaine '+d.w+' \xB7 Jour '+(i+1)+' / 28</div>'+
+    '<div class="tcm">'+
+    '<span class="tct">'+d.em+' '+d.th+'</span>'+
+    '<div class="tbx"><div class="tbn">'+tot+'</div><div class="tbl">min</div></div>'+
+    '</div>'+
+    '<div class="dp">'+
+    '<div class="dpr"><span>'+done+'/'+d.t.length+' t\xE2ches</span><span>'+pct+'%</span></div>'+
+    '<div class="dpb"><div class="dpf" style="width:'+pct+'%"></div></div>'+
+    '</div></div>'+
+    '<div class="tcb" style="background:'+d.bg+'">'+th+'</div>'+
+    '</div>';
+}
+
+function rG(){
+  var tot=aT(), done=aD(), df=dF();
+  var pct=Math.round(done/tot*100);
+  document.getElementById('gpct').textContent=pct+'%';
+  document.getElementById('gfill').style.width=pct+'%';
+  document.getElementById('gct').textContent=done+' / '+tot+' t\xE2ches';
+  document.getElementById('s1').textContent=done;
+  document.getElementById('s2').textContent=df;
+  document.getElementById('s3').textContent=28-df;
+  var qi=Math.min(Math.floor(pct/100*(Q.length-1)),Q.length-1);
+  document.getElementById('mot').textContent=Q[qi];
+}
+
+function render(){rWT();rDG();rTC();rG();}
+function setW(w){cw=w;var f=D.findIndex(function(d){return d.w===w;});if(f>=0)cd=f;sv();render();}
+function setD(i){cd=i;cw=D[i].w;sv();render();}
+function tog(i,j){s.t[i+'_'+j]=!s.t[i+'_'+j];sv();render();}
+function resetAll(){if(confirm('R\xE9initialiser tout le mois?')){s={t:{}};cw=1;cd=0;sv();render();}}
+
+if(!raw){cd=Math.min(tDow(),6);cw=1;sv();}
+render();
+</script>
+</body>
+</html>
