@@ -140,9 +140,8 @@ function initFB(){
     if(FB.apiKey.indexOf('VOTRE')!==-1){setSbar('off','💾 Sauvegarde locale uniquement (Firebase non configuré)');return;}
     firebase.initializeApp(FB);
     var db=firebase.database();
-    var uid=localStorage.getItem('pm_uid');
-    if(!uid){uid='u'+Date.now().toString(36)+Math.random().toString(36).substr(2,5);localStorage.setItem('pm_uid',uid);}
-    fbRef=db.ref('plannings/'+uid);
+    var uid = 'patrick';
+    fbRef = db.ref('plannings/' + uid);
     fbOk=true;
     db.ref('.info/connected').on('value',function(snap){
       if(snap.val()){setSbar('on','☁️ Synchronisé avec le cloud');}
