@@ -12,7 +12,7 @@
 html{height:-webkit-fill-available}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:linear-gradient(160deg,#5a67d8,#434190 45%,#322659);min-height:100vh;min-height:-webkit-fill-available;padding:16px 12px 60px}
 @supports(padding-top:env(safe-area-inset-top)){body{padding-top:max(16px,env(safe-area-inset-top));padding-bottom:max(60px,env(safe-area-inset-bottom))}}
-.app{max-width:420px;margin:0 auto}
+.app{max-width:420px;margin:0 auto;transition:opacity .3s}
 .hdr{text-align:center;color:#fff;padding:8px 0 18px}
 .hdr h1{font-size:1.4rem;font-weight:800}
 .hdr p{font-size:.73rem;opacity:.7;margin-top:4px}
@@ -30,6 +30,13 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .stn{font-size:1.2rem;font-weight:800;color:#2d3748}
 .stl{font-size:.62rem;color:#718096;margin-top:1px}
 .mot{font-size:.77rem;color:#718096;font-style:italic;text-align:center;margin-top:10px;padding-top:10px;border-top:1px solid #f0f0f0}
+.sbar{display:flex;align-items:center;gap:8px;padding:9px 13px;background:rgba(255,255,255,.13);border-radius:12px;margin-bottom:12px}
+.sdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;transition:background .3s}
+.sdot.on{background:#68d391}
+.sdot.off{background:#fc8181}
+.sdot.sy{background:#f6e05e;animation:pu 1s infinite}
+@keyframes pu{0%,100%{opacity:1}50%{opacity:.25}}
+.stxt{font-size:.72rem;color:rgba(255,255,255,.85);flex:1}
 .wt{display:flex;gap:7px;margin-bottom:11px}
 .wtb{flex:1;padding:10px 3px;border-radius:12px;border:none;cursor:pointer;font-size:.75rem;font-weight:700;touch-action:manipulation;transition:all .2s}
 .wtb.on{background:#fff;color:#434190;box-shadow:0 4px 12px rgba(0,0,0,.14)}
@@ -63,10 +70,23 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tt{flex:1;font-size:.85rem;font-weight:500;color:#2d3748;line-height:1.3}
 .dur{font-size:.68rem;font-weight:700;padding:3px 7px;border-radius:7px;flex-shrink:0}
 .cong{text-align:center;padding:11px;background:#f0fff4;border-radius:12px;color:#276749;font-weight:700;font-size:.82rem;margin-top:8px}
+.ld{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(160deg,#5a67d8,#434190 45%,#322659);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s}
+.ld.hide{opacity:0;pointer-events:none}
+.ld-em{font-size:3rem;margin-bottom:14px;animation:bob .9s ease-in-out infinite alternate}
+@keyframes bob{from{transform:translateY(0)}to{transform:translateY(-8px)}}
+.ld-t{color:#fff;font-size:1rem;font-weight:700}
+.ld-s{color:rgba(255,255,255,.6);font-size:.75rem;margin-top:6px;text-align:center;padding:0 30px}
 </style>
 </head>
 <body>
-<div class="app">
+
+<div class="ld" id="ld">
+  <div class="ld-em">🏠</div>
+  <div class="ld-t">Chargement en cours...</div>
+  <div class="ld-s" id="ld-s">Connexion au cloud Firebase</div>
+</div>
+
+<div class="app" id="app" style="opacity:0">
   <div class="hdr">
     <h1>🏠 Mon Planning Ménager</h1>
     <p>20 min/jour &middot; 4 semaines &middot; Maison impeccable</p>
@@ -85,14 +105,62 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     </div>
     <div class="mot" id="mot">Bienvenue! Prêt pour un mois propre? 🚀</div>
   </div>
+  <div class="sbar">
+    <div class="sdot off" id="sdot"></div>
+    <span class="stxt" id="stxt">Connexion...</span>
+  </div>
   <div class="wt" id="wt"></div>
   <div class="dg" id="dg"></div>
   <div id="tc"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
+
+// ================================================================
+//  CONFIGURATION FIREBASE — Remplacer par vos propres valeurs
+//  (obtenues depuis console.firebase.google.com)
+// ================================================================
+var FB = {
+   apiKey: "AIzaSyCrzBxiTv2XETmp1IwSPtJOpdbWhEkyxA4",
+  authDomain: "planning-menager.firebaseapp.com",
+  databaseURL: "https://planning-menager-default-rtdb.firebaseio.com",
+  projectId: "planning-menager",
+  storageBucket: "planning-menager.firebasestorage.app",
+  messagingSenderId: "1047059054133",
+  appId: "1:1047059054133:web:47522c5c811ee3a9817b7c"
+};
+// ================================================================
+
+var fbOk=false, fbRef=null, saveTimer=null;
+
+function initFB(){
+  try{
+    if(FB.apiKey.indexOf('VOTRE')!==-1){setSbar('off','💾 Sauvegarde locale uniquement (Firebase non configuré)');return;}
+    firebase.initializeApp(FB);
+    var db=firebase.database();
+    var uid=localStorage.getItem('pm_uid');
+    if(!uid){uid='u'+Date.now().toString(36)+Math.random().toString(36).substr(2,5);localStorage.setItem('pm_uid',uid);}
+    fbRef=db.ref('plannings/'+uid);
+    fbOk=true;
+    db.ref('.info/connected').on('value',function(snap){
+      if(snap.val()){setSbar('on','☁️ Synchronisé avec le cloud');}
+      else{setSbar('off','📵 Hors ligne — sauvegarde locale active');}
+    });
+  }catch(e){fbOk=false;setSbar('off','⚠️ Firebase indisponible — mode local');}
+}
+
+function setSbar(state,msg){
+  var d=document.getElementById('sdot'),t=document.getElementById('stxt');
+  if(d)d.className='sdot '+state;
+  if(t)t.textContent=msg;
+}
+
+initFB();
+
 var _fb={};
-function lsG(k){try{return localStorage.getItem(k);}catch(e){return _fb[k]!==undefined?_fb[k]:null;}}
+function lsG(k){try{return localStorage.getItem(k);}catch(e){return _fb[k]||null;}}
 function lsS(k,v){try{localStorage.setItem(k,v);}catch(e){_fb[k]=v;}}
 
 var D=[
@@ -168,7 +236,19 @@ var raw=lsG('pm28'), s=raw?JSON.parse(raw):{t:{},w:1,d:0};
 if(!s.t)s.t={};
 var cw=s.w||1, cd=s.d||0;
 
-function sv(){s.w=cw;s.d=cd;lsS('pm28',JSON.stringify(s));}
+function sv(){
+  s.w=cw; s.d=cd;
+  lsS('pm28',JSON.stringify(s));
+  if(fbOk&&fbRef){
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(function(){
+      setSbar('sy','\u231B Sauvegarde en cours...');
+      fbRef.set(s).then(function(){setSbar('on','\u2601\uFE0F Synchronis\xE9 avec le cloud');})
+        .catch(function(){setSbar('off','\u26A0\uFE0F Erreur de synchronisation');});
+    },600);
+  }
+}
+
 function aT(){return D.reduce(function(a,d){return a+d.t.length;},0);}
 function aD(){return D.reduce(function(a,d,i){return a+d.t.filter(function(t,j){return s.t[i+'_'+j];}).length;},0);}
 function dD(i){return D[i].t.filter(function(t,j){return s.t[i+'_'+j];}).length;}
@@ -182,10 +262,10 @@ function rWT(){
 }
 
 function rDG(){
-  var dow=tDow(), h='';
+  var dow=tDow(),h='';
   D.forEach(function(d,i){
     if(d.w!==cw)return;
-    var ok=dD(i)===d.t.length, isT=(i%7)===dow;
+    var ok=dD(i)===d.t.length,isT=(i%7)===dow;
     var cls='db'+(i===cd?' act':'')+(ok?' ok':'')+(isT?' td':'');
     h+='<button class="'+cls+'" onclick="setD('+i+')">';
     h+='<div class="da">'+d.n+'</div>';
@@ -196,9 +276,9 @@ function rDG(){
 }
 
 function rTC(){
-  var d=D[cd], i=cd;
+  var d=D[cd],i=cd;
   var tot=d.t.reduce(function(a,t){return a+t.d;},0);
-  var done=dD(i), pct=Math.round(done/d.t.length*100);
+  var done=dD(i),pct=Math.round(done/d.t.length*100);
   var th='';
   d.t.forEach(function(t,j){
     var c=!!s.t[i+'_'+j];
@@ -226,7 +306,7 @@ function rTC(){
 }
 
 function rG(){
-  var tot=aT(), done=aD(), df=dF();
+  var tot=aT(),done=aD(),df=dF();
   var pct=Math.round(done/tot*100);
   document.getElementById('gpct').textContent=pct+'%';
   document.getElementById('gfill').style.width=pct+'%';
@@ -244,8 +324,30 @@ function setD(i){cd=i;cw=D[i].w;sv();render();}
 function tog(i,j){s.t[i+'_'+j]=!s.t[i+'_'+j];sv();render();}
 function resetAll(){if(confirm('R\xE9initialiser tout le mois?')){s={t:{}};cw=1;cd=0;sv();render();}}
 
-if(!raw){cd=Math.min(tDow(),6);cw=1;sv();}
-render();
+function showApp(){
+  document.getElementById('ld').classList.add('hide');
+  document.getElementById('app').style.opacity='1';
+}
+
+function boot(){
+  if(!raw){cd=Math.min(tDow(),6);cw=1;}
+  if(fbOk&&fbRef){
+    var tmo=setTimeout(function(){
+      document.getElementById('ld-s').textContent='Chargement depuis la m\xE9moire locale...';
+      showApp();render();
+    },5000);
+    fbRef.once('value').then(function(snap){
+      clearTimeout(tmo);
+      var data=snap.val();
+      if(data){s=data;if(!s.t)s.t={};cw=s.w||1;cd=s.d||0;lsS('pm28',JSON.stringify(s));}
+      showApp();render();
+    }).catch(function(){clearTimeout(tmo);showApp();render();});
+  } else {
+    showApp();render();
+  }
+}
+
+boot();
 </script>
 </body>
 </html>
