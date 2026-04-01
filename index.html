@@ -37,6 +37,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .sdot.sy{background:#f6e05e;animation:pu 1s infinite}
 @keyframes pu{0%,100%{opacity:1}50%{opacity:.25}}
 .stxt{font-size:.72rem;color:rgba(255,255,255,.85);flex:1}
+.sync-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;background:rgba(255,255,255,.22);border:none;border-radius:10px;color:#fff;font-size:.75rem;font-weight:700;cursor:pointer;touch-action:manipulation;flex-shrink:0;transition:all .2s}
+.sync-btn:active{background:rgba(255,255,255,.35);transform:scale(.95)}
+.sync-btn.spin .si{display:inline-block;animation:sp .7s linear infinite}
+@keyframes sp{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.si{display:inline-block;font-size:.85rem}
 .wt{display:flex;gap:7px;margin-bottom:11px}
 .wtb{flex:1;padding:10px 3px;border-radius:12px;border:none;cursor:pointer;font-size:.75rem;font-weight:700;touch-action:manipulation;transition:all .2s}
 .wtb.on{background:#fff;color:#434190;box-shadow:0 4px 12px rgba(0,0,0,.14)}
@@ -108,6 +113,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   <div class="sbar">
     <div class="sdot off" id="sdot"></div>
     <span class="stxt" id="stxt">Connexion...</span>
+    <button class="sync-btn" id="syncbtn" onclick="syncNow()">
+      <span class="si" id="sico">🔄</span> SYNC
+    </button>
   </div>
   <div class="wt" id="wt"></div>
   <div class="dg" id="dg"></div>
@@ -119,8 +127,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 <script>
 
 // ================================================================
-//  CONFIGURATION FIREBASE — Remplacer par vos propres valeurs
-//  (obtenues depuis console.firebase.google.com)
+//  CONFIGURATION FIREBASE
 // ================================================================
 var FB = {
   apiKey: "AIzaSyCrzBxiTv2XETmp1IwSPtJOpdbWhEkyxA4",
@@ -140,8 +147,8 @@ function initFB(){
     if(FB.apiKey.indexOf('VOTRE')!==-1){setSbar('off','💾 Sauvegarde locale uniquement (Firebase non configuré)');return;}
     firebase.initializeApp(FB);
     var db=firebase.database();
-    var uid = 'patrick';
-    fbRef = db.ref('plannings/' + uid);
+    var uid='patrick';
+    fbRef=db.ref('plannings/'+uid);
     fbOk=true;
     db.ref('.info/connected').on('value',function(snap){
       if(snap.val()){setSbar('on','☁️ Synchronisé avec le cloud');}
@@ -154,6 +161,23 @@ function setSbar(state,msg){
   var d=document.getElementById('sdot'),t=document.getElementById('stxt');
   if(d)d.className='sdot '+state;
   if(t)t.textContent=msg;
+}
+
+function syncNow(){
+  if(!fbOk||!fbRef){setSbar('off','⚠️ Firebase non disponible');return;}
+  var btn=document.getElementById('syncbtn');
+  btn.classList.add('spin');
+  setSbar('sy','⏳ Synchronisation en cours...');
+  fbRef.once('value').then(function(snap){
+    var data=snap.val();
+    if(data){s=data;if(!s.t)s.t={};cw=s.w||1;cd=s.d||0;lsS('pm28',JSON.stringify(s));}
+    btn.classList.remove('spin');
+    setSbar('on','☁️ Synchronisé avec le cloud');
+    render();
+  }).catch(function(){
+    btn.classList.remove('spin');
+    setSbar('off','⚠️ Erreur de synchronisation');
+  });
 }
 
 initFB();
